@@ -1,3 +1,5 @@
 #######################
 Team Planning for Geeks
 #######################
+
+Planning for teams doing multiple projects over time without Excel madness.
