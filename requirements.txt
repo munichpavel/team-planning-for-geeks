@@ -1,0 +1,8 @@
+pytest
+pylint
+jupyter
+pandas
+xarray
+matplotlib
+
+-e .
