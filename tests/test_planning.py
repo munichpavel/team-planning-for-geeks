@@ -18,9 +18,9 @@ def test_validate_bounds():
         ValidateBounds(1., 2.)(values)
 
 planner = Planner(
-    ['harry', 'ron', 'hermione'], 
-    ['potions', 'herbology'], 
-    range(12)
+    names=['harry', 'ron', 'hermione'], 
+    tasks=['potions', 'herbology'], 
+    time=range(12)
 )
 def test_initialize():
     planner.initialize_values(0.)
