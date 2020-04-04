@@ -2,4 +2,4 @@
 Team Planning for Geeks
 #######################
 
-Planning for teams doing multiple projects over time without meshuga Excel.
+Planning for teams doing multiple projects over time without Excel data-entry madness.
