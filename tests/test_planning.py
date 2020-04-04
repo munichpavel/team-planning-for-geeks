@@ -1,6 +1,7 @@
 import pytest
 import numpy as np
-from team_planning_for_geeks import Planner, ValidateBounds
+from team_planning_for_geeks import Planner
+from team_planning_for_geeks.planning import ValidateBounds
 
 
 def test_validate_bounds():
@@ -16,12 +17,24 @@ def test_validate_bounds():
     with pytest.raises(ValueError):
         ValidateBounds(1., 2.)(values)
 
-
+planner = Planner(
+    ['harry', 'ron', 'hermione'], 
+    ['potions', 'herbology'], 
+    range(12)
+)
 def test_initialize():
-    planner = Planner(['harry', 'ron', 'hermione'], ['potions', 'herbology'], range(12))
     planner.initialize_values(0.)
     np.testing.assert_array_equal(planner.values, np.zeros((3,2,12)))
 
     with pytest.raises(ValueError):
         planner.initialize_values(1.5)
         planner.initialize_values(-1)
+
+def test_set_query():
+    planner.set_values(dict(name='ron', task='potions', time=1), 0.1)
+    planner.query(dict(name='ron', task='potions', time=1)) == np.array(0.1)
+
+    planner.set_values(dict(name='ron', task='herbology'), np.ones(12))
+    np.testing.assert_array_equal(
+        planner.query(dict(name='ron', task='herbology')), np.ones(12)
+    )

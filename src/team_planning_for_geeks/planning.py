@@ -58,4 +58,16 @@ class Planner:
     def _get_values(self):
         return self._data.values
 
+    def set_values(self, coords, value):
+        self._set_values(coords, value)
+        validator(self.values)
+
+    def _set_values(self, coords, value):
+        self._data.loc[coords] = value       
+
+    def query(self, coords):
+        return self._query(coords)
+        
+    def _query(self, coords):
+        return self._data.sel(coords).values
     
