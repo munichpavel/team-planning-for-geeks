@@ -1,6 +1,6 @@
 import pytest
 import numpy as np
-from team_planning_for_geeks.planning import Planner, ValidateBounds
+from team_planning_for_geeks import Planner, ValidateBounds
 
 
 def test_validate_bounds():
