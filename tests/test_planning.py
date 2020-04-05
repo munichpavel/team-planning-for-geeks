@@ -19,6 +19,7 @@ def test_validate_bounds():
     with pytest.raises(ValueError):
         ValidateBounds(1., 2.)(values)
 
+
 @pytest.fixture
 def planner():
     return Planner(
@@ -26,6 +27,8 @@ def planner():
         tasks=['potions', 'herbology'], 
         time=range(12)
     )
+
+
 def test_initialize(planner):
     planner.initialize_values(0.)
     np.testing.assert_array_equal(planner.values, np.zeros((3,2,12)))
@@ -33,6 +36,7 @@ def test_initialize(planner):
     with pytest.raises(ValueError):
         planner.initialize_values(1.5)
         planner.initialize_values(-1)
+
 
 def test_set_query(planner):
     planner.initialize_values(0.)

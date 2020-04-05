@@ -35,7 +35,10 @@ class ValidateBounds:
     def all_values_leq_upper_bound(self, values):
         return np.all(values <= self.upper_bound)
 
+
 validator = ValidateBounds(0., 1.)
+
+
 @attr.s
 class Planner:
     """
