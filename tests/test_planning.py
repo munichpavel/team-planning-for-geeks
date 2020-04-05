@@ -31,10 +31,14 @@ def test_initialize():
         planner.initialize_values(-1)
 
 def test_set_query():
-    planner.set_values(dict(name='ron', task='potions', time=1), 0.1)
-    planner.query(dict(name='ron', task='potions', time=1)) == np.array(0.1)
-
-    planner.set_values(dict(name='ron', task='herbology'), np.ones(12))
+    planner.set_values(dict(name=['ron'], task=['potions'], time=[1]), 0.1)
     np.testing.assert_array_equal(
-        planner.query(dict(name='ron', task='herbology')), np.ones(12)
+        planner.query(dict(name=['ron'], task=['potions'], time=[1])).values,
+        np.array([[[0.1]]])
+    )
+
+    planner.set_values(dict(name=['ron'], task=['herbology']), np.ones(12))
+    np.testing.assert_array_equal(
+        planner.query(dict(name=['ron'], task=['herbology'])).values, 
+        np.reshape(np.ones(12), (1,1,12))
     )

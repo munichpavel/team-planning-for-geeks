@@ -37,16 +37,46 @@ class ValidateBounds:
 validator = ValidateBounds(0., 1.)
 @attr.s
 class Planner:
+    """
+    Team planning container for multiple tasks over time.
+
+    Attributes
+    ----------
+    names: iterable
+        Team member names, typically str but need not be
+    tasks : iterable
+        Task names, typically str but need not be
+    time : iterable
+        Time units
+
+    """
     names=attr.ib()
     tasks=attr.ib()
     time=attr.ib()
 
     def initialize_values(self, value=0.):
+        """
+        Set all resource-allocation values to a single initial value
+
+        Parameters
+        ----------
+        value : numeric
+        """
         full_values = np.full((len(self.names), len(self.tasks), len(self.time)), value)
         self._data = self.set_data(full_values)
         self.values = self._get_values()
     
     def set_data(self, values):
+        """
+        Set all resource-allocation values by assigning the full 3d array
+        of values
+
+        Parameter
+        ---------
+        values : np.array
+            Array of shape(len(self.names), len(self.tasks), len(self.time))
+
+        """
         validator(values)
         res = xr.DataArray(
             values,
@@ -66,8 +96,29 @@ class Planner:
         self._data.loc[coords] = value       
 
     def query(self, coords):
+        """
+        Query the planner, returning a (new) planner restricted to
+        the given coordinates.
+
+        Parameters
+        ----------
+        coords: dict of iterables
+            Must be of form dict(name=<iter>, task=<iter>, time=<iter>)
+        
+        Returns
+        -------
+        res : Planner
+            An instance of Planner with coords and values subsets of self
+        """
         return self._query(coords)
         
     def _query(self, coords):
-        return self._data.sel(coords).values
-    
+        res = Planner(
+            names=coords.get('name', self.names),
+            tasks=coords.get('task', self.tasks),
+            time=coords.get('time', self.time)
+        )
+        res.initialize_values(0.)
+        values = self._data.sel(coords).values
+        res.set_values(coords, values)
+        return res
