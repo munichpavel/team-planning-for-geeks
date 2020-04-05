@@ -32,7 +32,7 @@ def planner():
     return Planner(
         name=names, 
         task=tasks, 
-        time=tenors
+        tenor=tenors
     )
 
 
@@ -47,9 +47,9 @@ def test_initialize(planner):
 
 def test_set_query(planner):
     planner.initialize_values(0.)
-    planner.set_values(dict(name=['ron'], task=['potions'], time=[1]), 0.1)
+    planner.set_values(dict(name=['ron'], task=['potions'], tenor=[1]), 0.1)
     np.testing.assert_array_equal(
-        planner.query(dict(name=['ron'], task=['potions'], time=[1])).values,
+        planner.query(dict(name=['ron'], task=['potions'], tenor=[1])).values,
         np.array([[[0.1]]])
     )
 
@@ -70,7 +70,7 @@ def test_set_query(planner):
              0.8*np.ones((len(tasks), len(tenors))),
             index=tasks, columns=tenors
         )),
-        (0.3, ('time', 1), pd.DataFrame(
+        (0.3, ('tenor', 1), pd.DataFrame(
             0.3*np.ones((len(names), len(tasks))),
             index=names, columns=tasks
         ))

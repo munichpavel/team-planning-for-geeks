@@ -50,13 +50,13 @@ class Planner:
         Team member names, typically str but need not be
     task : iterable
         Task names, typically str but need not be
-    time : iterable
+    tenor : iterable
         Time units
 
     """
     name=attr.ib()
     task=attr.ib()
-    time=attr.ib()
+    tenor=attr.ib()
 
     def initialize_values(self, value=0.):
         """
@@ -66,7 +66,7 @@ class Planner:
         ----------
         value : numeric
         """
-        full_values = np.full((len(self.name), len(self.task), len(self.time)), value)
+        full_values = np.full((len(self.name), len(self.task), len(self.tenor)), value)
         self._data = self.set_data(full_values)
         self.values = self._get_values()
     
@@ -78,14 +78,14 @@ class Planner:
         Parameter
         ---------
         values : np.array
-            Array of shape(len(self.name), len(self.task), len(self.time))
+            Array of shape(len(self.name), len(self.task), len(self.tenor))
 
         """
         validator(values)
         res = xr.DataArray(
             values,
-            dims=('name', 'task', 'time'),
-            coords=dict(name=self.name, task=self.task, time=self.time)
+            dims=('name', 'task', 'tenor'),
+            coords=dict(name=self.name, task=self.task, tenor=self.tenor)
         )
         return res
 
@@ -107,7 +107,7 @@ class Planner:
         Parameters
         ----------
         coords: dict of iterables
-            Must be of form dict(name=<iter>, task=<iter>, time=<iter>)
+            Must be of form dict(name=<iter>, task=<iter>, tenor=<iter>)
         
         Returns
         -------
@@ -120,7 +120,7 @@ class Planner:
         res = Planner(
             name=coords.get('name', self.name),
             task=coords.get('task', self.task),
-            time=coords.get('time', self.time)
+            tenor=coords.get('tenor', self.tenor)
         )
         res.initialize_values(0.)
         values = self._data.sel(coords).values
@@ -134,7 +134,7 @@ class Planner:
         Parameters
         ----------
         dim : str
-            One of the 'name', 'task' or 'time'
+            One of the 'name', 'task' or 'tenor'
         value : object
             Coordinate value of dimension dim
 
