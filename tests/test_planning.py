@@ -20,12 +20,19 @@ def test_validate_bounds():
         ValidateBounds(1., 2.)(values)
 
 
+
+# Not defined as fixtures, as they are needed in paramatrization
+names = ['harry', 'ron', 'hermione']
+tasks = ['potions', 'herbology']
+tenors = range(12)
+
+
 @pytest.fixture
 def planner():
     return Planner(
-        names=['harry', 'ron', 'hermione'], 
-        tasks=['potions', 'herbology'], 
-        time=range(12)
+        name=names, 
+        task=tasks, 
+        time=tenors
     )
 
 
@@ -51,3 +58,26 @@ def test_set_query(planner):
         planner.query(dict(name=['ron'], task=['herbology'])).values, 
         np.reshape(np.ones(12), (1,1,12))
     )
+
+@pytest.mark.parametrize(
+    "init_value,project_along,expected",
+    [
+        (0.2, ('task', 'potions'), pd.DataFrame(
+            0.2*np.ones((len(names), len(tenors))),
+            index=names, columns=tenors
+        )),
+        (0.8, ('name', 'hermione'), pd.DataFrame(
+             0.8*np.ones((len(tasks), len(tenors))),
+            index=tasks, columns=tenors
+        )),
+        (0.3, ('time', 1), pd.DataFrame(
+            0.3*np.ones((len(names), len(tasks))),
+            index=names, columns=tasks
+        ))
+    ]
+)
+def test_project_along(planner, init_value, project_along, expected):
+    planner.initialize_values(init_value)
+    print(planner.values)
+    res = planner.project_along(*project_along)
+    pd.testing.assert_frame_equal(res, expected)

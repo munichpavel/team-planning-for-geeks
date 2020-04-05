@@ -46,16 +46,16 @@ class Planner:
 
     Attributes
     ----------
-    names: iterable
+    name: iterable
         Team member names, typically str but need not be
-    tasks : iterable
+    task : iterable
         Task names, typically str but need not be
     time : iterable
         Time units
 
     """
-    names=attr.ib()
-    tasks=attr.ib()
+    name=attr.ib()
+    task=attr.ib()
     time=attr.ib()
 
     def initialize_values(self, value=0.):
@@ -66,7 +66,7 @@ class Planner:
         ----------
         value : numeric
         """
-        full_values = np.full((len(self.names), len(self.tasks), len(self.time)), value)
+        full_values = np.full((len(self.name), len(self.task), len(self.time)), value)
         self._data = self.set_data(full_values)
         self.values = self._get_values()
     
@@ -78,14 +78,14 @@ class Planner:
         Parameter
         ---------
         values : np.array
-            Array of shape(len(self.names), len(self.tasks), len(self.time))
+            Array of shape(len(self.name), len(self.task), len(self.time))
 
         """
         validator(values)
         res = xr.DataArray(
             values,
             dims=('name', 'task', 'time'),
-            coords=dict(name=self.names, task=self.tasks, time=self.time)
+            coords=dict(name=self.name, task=self.task, time=self.time)
         )
         return res
 
@@ -118,11 +118,38 @@ class Planner:
         
     def _query(self, coords):
         res = Planner(
-            names=coords.get('name', self.names),
-            tasks=coords.get('task', self.tasks),
+            name=coords.get('name', self.name),
+            task=coords.get('task', self.task),
             time=coords.get('time', self.time)
         )
         res.initialize_values(0.)
         values = self._data.sel(coords).values
         res.set_values(coords, values)
         return res
+
+    def project_along(self, dim, value):
+        """
+        Query for coordinate pair dim, value and project down along given dimension.
+
+        Parameters
+        ----------
+        dim : str
+            One of the 'name', 'task' or 'time'
+        value : object
+            Coordinate value of dimension dim
+
+        Returns
+        -------
+        res : pandas.DataFrame
+            DataFrame with index and column names from the remaining dimensions
+        """
+        print(dim)
+        along_query = {dim: [value]}
+
+        keep_dims = [d for d in self.query(along_query)._data.dims if d != dim]
+        index = getattr(self, keep_dims[0])
+        columns = getattr(self, keep_dims[1])
+        proj_values = self.query(along_query).values.squeeze()
+        return pd.DataFrame(
+            proj_values, index=index, columns=columns
+        )
