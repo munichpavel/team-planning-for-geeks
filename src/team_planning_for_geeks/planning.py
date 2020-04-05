@@ -143,7 +143,6 @@ class Planner:
         res : pandas.DataFrame
             DataFrame with index and column names from the remaining dimensions
         """
-        print(dim)
         along_query = {dim: [value]}
 
         keep_dims = [d for d in self.query(along_query)._data.dims if d != dim]
