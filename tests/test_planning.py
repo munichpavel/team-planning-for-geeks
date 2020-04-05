@@ -63,21 +63,49 @@ def test_set_query(planner):
     "init_value,project_along,expected",
     [
         (0.2, ('task', 'potions'), pd.DataFrame(
-            0.2*np.ones((len(names), len(tenors))),
+            0.2 * np.ones((len(names), len(tenors))),
             index=names, columns=tenors
         )),
         (0.8, ('name', 'hermione'), pd.DataFrame(
-             0.8*np.ones((len(tasks), len(tenors))),
+             0.8 * np.ones((len(tasks), len(tenors))),
             index=tasks, columns=tenors
         )),
         (0.3, ('tenor', 1), pd.DataFrame(
-            0.3*np.ones((len(names), len(tasks))),
+            0.3 * np.ones((len(names), len(tasks))),
             index=names, columns=tasks
         ))
     ]
 )
 def test_project_along(planner, init_value, project_along, expected):
     planner.initialize_values(init_value)
-    print(planner.values)
     res = planner.project_along(*project_along)
+    pd.testing.assert_frame_equal(res, expected)
+
+def test_sum_over(planner):
+    planner.initialize_values(0.2)
+    res = planner.sum('name')
+    expected = pd.DataFrame(
+        0.6 * np.ones((len(tasks), len(tenors))),
+        index=tasks, columns=tenors
+    )
+
+    pd.testing.assert_frame_equal(res, expected)
+
+    res = planner.sum('task')
+    expected = pd.DataFrame(
+        0.4 * np.ones((len(names), len(tenors))),
+        index=names, columns=tenors
+    )
+
+    pd.testing.assert_frame_equal(res, expected)
+
+def test_get_snapshot_at(planner):
+    tenor = 1
+    planner.initialize_values(0.2)
+    res = planner.get_snapshot_at(tenor)
+    expected = pd.DataFrame(
+        0.2 * np.ones((len(names), len(tasks))),
+        index=names, columns=tasks
+    )
+
     pd.testing.assert_frame_equal(res, expected)

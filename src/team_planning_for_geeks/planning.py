@@ -134,7 +134,7 @@ class Planner:
         Parameters
         ----------
         dim : str
-            One of the 'name', 'task' or 'tenor'
+            One of 'name', 'task' or 'tenor'
         value : object
             Coordinate value of dimension dim
 
@@ -152,3 +152,43 @@ class Planner:
         return pd.DataFrame(
             proj_values, index=index, columns=columns
         )
+
+    def sum(self, dim):
+        """
+        Sum values along given dimension.
+
+        Parameters
+        ----------
+        dim : str
+            One of 'name', 'task' or 'tenor'
+        
+        Returns
+        -------
+        : pandas.DataFrame
+        """
+        keep_dims = [d for d in self._data.dims if d != dim]
+        values = self._sum(dim)
+        return pd.DataFrame(
+            values,
+            index=getattr(self, keep_dims[0]), columns=getattr(self, keep_dims[1])
+        )
+
+    def _sum(self, dim):
+        return self._data.sum(dim=dim).values
+
+    def get_snapshot_at(self, tenor):
+        """
+        Get name x task snapshot at given tenor
+
+        Parameters
+        ----------
+        tenor : object
+            One of self.tenor
+
+        Returns
+        -------
+        : pandas.DataFrame
+            Dataframe of values for name, task combinations at time tenor
+        """
+        values = self.query(dict(tenor=[tenor])).values.squeeze()
+        return pd.DataFrame(values, index=self.name, columns=self.task)
